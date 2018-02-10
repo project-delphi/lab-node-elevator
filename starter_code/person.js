@@ -1,5 +1,6 @@
 class Person {
   constructor(name, originFloor, destinationFloor){
+    
   }
 }
 
