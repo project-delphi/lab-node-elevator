@@ -10,30 +10,44 @@ class Elevator {
 
   }
 
-  start() { this.interval = setInterval(update(), 1000)}
+  start() { this.interval = setInterval(this.update(), 1000)}
   
   stop() { clearInterval(this.interval)}
   
   update() { 
+    this.direction === 'up' ? this.floorUp() : this.floorDown()
     this.log()
-    
+    this._passengersEnter()
+    this._passengersLeave()
   }
   
   _passengersEnter() { 
-    console.log(`${} has entered the elevator`)
+    this.waitingList.forEach( (person) => {
+      if(person.originFloor === this.floor){
+        this.waitingList.splice(this.waitingList.indexof(person))
+        this.passengers.push(person)
+        console.log(`${person.name} has entered the elevator`)
+      }
+    }
+    )
   }
   
   _passengersLeave() {
-
-    console.log(`${} has left the elevator`)
-   }
+    this.passengers.forEach((person) => {
+      if(person.destinationFloor===this.floor){
+        this.passengers.splice(this.passengers.indexof(person))
+        console.log(`${person.name} has left the elevator`)
+      }
+    }
+    )
+  }
   
-   floorUp() { 
+  floorUp() { 
     this.floor != this.MAXFLOOR ? this.floor++ : null 
   }
   
   floorDown() {
-     this.floor !== 0 ? this.floor-- : null
+    this.floor !== 0 ? this.floor-- : null
   }
   
   call(person) {
@@ -42,8 +56,8 @@ class Elevator {
   }
   
   log() {
-    console.log(`Direction: ${this.direction}| Floor: ${this.floor}`)
-   }
+    console.log(`Direction: ${this.direction} | Floor: ${this.floor}`)
+  }
 }
 
-module.exports = Elevator;
+module.exports = Elevator
