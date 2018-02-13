@@ -16,28 +16,36 @@ class Elevator {
   update() {
     if(this.waitingList.length === 0 && this.passengers.length === 0) {this.stop()}
     this.log()
-    this.direction === 'up' ? this.floorUp() : this.floorDown()
     if(this.requests.includes(this.floor)){
       this.doorsOpen()
     }
+    this.direction === 'up' ? this.floorUp() : this.floorDown()
   }
-  
+
+  doorsOpen(){
+    this._passengersEnter()
+    this._passengersLeave()
+  }
+
   _passengersEnter() { 
+    let newPassengersInd =[]
     for (const person of this.waitingList) {
-      if(person.originFloor === this.floor){
-        const ind = this.waitingList.indexOf(person)
-        this.waitingList.splice(ind,1)
+      if(person.originFloor == this.floor){
+        newPassengersInd.push(this.waitingList.indexOf(person))
         this.passengers.push(person)
-        this.requests = this.requests.filter((r)=> r!==this.floor)
         this.requests.push(person.destinationFloor)
         console.log(`${person.name} has entered the elevator`)
       }
     }
+    this.waitingList = this.waitingList.filter((value, index)=>{
+      return newPassengersInd.indexOf(index)==-1
+    })
+    this.requests = this.requests.filter((r)=> r!==this.floor)
   }
   
   _passengersLeave() {
     this.passengers =  this.passengers.filter((person)=> {
-      if(person.destinationFloor ===this.floor){
+      if(person.destinationFloor == this.floor){
         console.log(`${person.name} has left the elevator`)
       } else {
         return person
@@ -45,11 +53,8 @@ class Elevator {
     })
   }
 
-  doorsOpen(){
-    this._passengersEnter()
-    this._passengersLeave()
-  }
-  
+
+
   floorUp() { 
     this.floor != this.MAXFLOOR ? this.floor++ : this.direction = 'down' 
  
