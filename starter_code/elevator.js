@@ -17,8 +17,9 @@ class Elevator {
     if(this.waitingList.length === 0 && this.passengers.length === 0) {this.stop()}
     this.log()
     this.direction === 'up' ? this.floorUp() : this.floorDown()
-    this._passengersEnter()
-    this._passengersLeave()
+    if(this.requests.includes(this.floor)){
+      this.doorsOpen()
+    }
   }
   
   _passengersEnter() { 
@@ -27,25 +28,27 @@ class Elevator {
         const ind = this.waitingList.indexOf(person)
         this.waitingList.splice(ind,1)
         this.passengers.push(person)
+        this.requests = this.requests.filter((r)=> r!==this.floor)
+        this.requests.push(person.destinationFloor)
         console.log(`${person.name} has entered the elevator`)
       }
     }
   }
   
   _passengersLeave() {
-    this.requests.forEach((request) => {
-      if(request===this.floor){
-        this.passengers =  this.passengers.filter((person)=> {
-          if(person.destinationFloor!==this.floor){
-            return person
-          } else {
-            console.log(`${person.name} has left the elevator`)
-          }
-        })
+    this.passengers =  this.passengers.filter((person)=> {
+      if(person.destinationFloor ===this.floor){
+        console.log(`${person.name} has left the elevator`)
+      } else {
+        return person
       }
     })
   }
 
+  doorsOpen(){
+    this._passengersEnter()
+    this._passengersLeave()
+  }
   
   floorUp() { 
     this.floor != this.MAXFLOOR ? this.floor++ : this.direction = 'down' 
@@ -60,12 +63,18 @@ class Elevator {
     this.stop()
     this.start()
     this.waitingList.push(person)
-    this.requests.push(person.destinationFloor) 
+    this.requests.push(person.originFloor) 
   }
   
   log() {
     console.log(`Direction: ${this.direction} | Floor: ${this.floor}`)
-    console.log(`Passengers: ${this.passengers} | Waiting: ${this.waitingList}`)
+    for (const p of this.passengers) {
+      console.log(`Passenger: ${p.name}`) 
+    }
+    for (const w of this.waitingList) {
+      console.log(`Waiting: ${w.name}`)
+    }
+    console.log('---------')    
 
   }
 
